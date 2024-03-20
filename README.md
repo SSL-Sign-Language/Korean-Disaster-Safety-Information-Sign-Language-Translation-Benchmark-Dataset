@@ -7,4 +7,4 @@ The uploaded json file is our train sample data. For the source data (The Disast
 
 https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=636
 
-- Coming Soon.-
+- Coming Soon.
