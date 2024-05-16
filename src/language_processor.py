@@ -13,19 +13,13 @@ from .processor import Processor
 class LanguageProcessor(Processor):
     def __init__(self) -> None:
         super().__init__()
-
-    def _find_json_file_paths(self) -> Dict[str, str]:
-        mode_folder, _, mode_json = self._get_data_mode_path(self.args.processing_type)
-        json_directory = os.path.join(self.args.root_path, '01.데이터', mode_folder, '라벨링데이터', mode_json, '2.untact_morpheme')
-        json_file_paths = glob.glob(f'{json_directory}/**/*.json', recursive=True)
-        return {os.path.basename(path).split('.')[0]: path for path in json_file_paths}
-
+        
     def _list_video_names_within_max_frame(self) -> List[str]:
         _, mode_folder, _ = self._get_data_mode_path(self.args.processing_type)
         videos_directory = os.path.join(self.args.save_path, mode_folder, 'Video')
         video_folders = [name for name in os.listdir(videos_directory) if os.path.isdir(os.path.join(videos_directory, name))]
         return [name for name in video_folders if len(os.listdir(os.path.join(videos_directory, name))) <= self.args.max_frame] # Select max frame or less from the entire video data
-
+    
     def _create_gloss_sequence(self, sign_data: Dict[str, Any]) -> str:
         try:
             sign_script = sign_data['sign_script']

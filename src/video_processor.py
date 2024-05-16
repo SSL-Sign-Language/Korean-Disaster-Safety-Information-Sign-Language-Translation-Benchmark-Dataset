@@ -20,17 +20,7 @@ H, W = 1080, 1920
 class VideoProcessor(Processor):
     def __init__(self) -> None:
         super().__init__()
-
-    def _find_file_paths(self, file_type: str) -> List[str]:
-        assert file_type in ['json', 'mp4'], 'file_type must be either "json" or "mp4"'
         
-        mode_folder, _, mode_json = self._get_data_mode_path(self.args.processing_type)
-        file_directory = os.path.join(self.args.root_path, '01.데이터', mode_folder,
-                                      '라벨링데이터' if file_type == 'json' else '원천데이터',
-                                      mode_json if file_type == 'json' else '1.mp4',
-                                      '2.untact_morpheme' if file_type == 'json' else '3.crowd')
-        return glob.glob(f'{file_directory}/**/*.{file_type}', recursive=True)
-
     def _get_start_end(self, data: Dict[str, Any], time_margin: int = 1) -> Tuple[int, int]:
         try:
             total = sum(data.values(), [])
@@ -66,22 +56,6 @@ class VideoProcessor(Processor):
         start, end, y_top = self._get_json_data(file_paths[0])
         self._video_to_images(start, end, y_top, file_paths[1], folder_path)
 
-    def _filter_videos_by_fps(self, video_path: str) -> Optional[str]:
-        clip = VideoFileClip(video_path)
-        return video_path if self.args.min_fps <= clip.fps <= self.args.max_fps else None
-
-    def _sort_by_filename(self, paths: List[str]) -> List[str]:
-        return sorted(paths, key=self._get_filename_without_extension)
-
-    def _find_matching_files(self) -> Tuple[List[str], List[str]]:
-        json_paths, video_paths = map(sorted, (self._find_file_paths(ft) for ft in ('json', 'mp4')))
-        
-        json_names, video_names = (self._get_filenames_without_extension(paths) for paths in (json_paths, video_paths))
-        matching_files = json_names & video_names # intersection of json and video
-                
-        return [p for p in json_paths if self._get_filename_without_extension(p) in matching_files], \
-               [p for p in video_paths if self._get_filename_without_extension(p) in matching_files]
-
     def _process_files(self, json_paths: List[str], video_paths: List[str]) -> None:
         logging.info(f"Selecting videos with FPS between {self.args.min_fps} and {self.args.max_fps}...")
         with mp.Pool(processes=self.args.mp) as pool:
@@ -98,12 +72,6 @@ class VideoProcessor(Processor):
         logging.info("Saving images for data...")
         with mp.Pool(processes=self.args.mp) as pool:
             list(tqdm(pool.imap(self._save_images_from_video, file_pairs), total=len(file_pairs)))
-
-    def _get_filename_without_extension(self, path: str) -> str:
-        return os.path.splitext(os.path.basename(path))[0]
-
-    def _get_filenames_without_extension(self, paths: List[str]) -> set:
-        return {self._get_filename_without_extension(p) for p in paths}
     
     def process(self) -> None:
         logging.info('Video preprocessing in progress...')

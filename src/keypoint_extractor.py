@@ -14,12 +14,7 @@ from .processor import Processor
 class KeypointExtractor(Processor):
     def __init__(self) -> None:
         super().__init__()
-    
-    def _read_video_frames(self, video_name: str) -> List[str]:
-        frame_paths = glob.glob(f'{os.path.join(self.video_root, video_name)}/*.{self.args.extension}', recursive=True)
-        frame_paths.sort()
-        return frame_paths
-                
+        
     def _extract_keypoints(self, video_name: str) -> None:
         frame_paths = self._read_video_frames(video_name)
         num_frames: int = len(frame_paths)
@@ -45,14 +40,6 @@ class KeypointExtractor(Processor):
             keypoints_transposed: np.ndarray = np.transpose(keypoints_concat, (3, 1, 2, 0))
             
             np.save(f'{self.npy_path}/{video_name}.npy', keypoints_transposed)
-
-    def _process_frame(self, frame_path: str) -> Optional[np.ndarray]:
-        try:
-            image: np.ndarray = cv2.imread(frame_path, cv2.IMREAD_COLOR)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            return image
-        except Exception as e:
-            return None
 
     def _update_keypoints(self, results: Any, left_hand_keypoints: np.ndarray, right_hand_keypoints: np.ndarray, 
                           body_keypoints: np.ndarray, image_size: Tuple[int, int, int], time_step: int) -> None:
