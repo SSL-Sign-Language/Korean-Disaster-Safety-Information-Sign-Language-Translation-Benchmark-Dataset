@@ -41,11 +41,13 @@ class LanguageProcessor(Processor):
         with open(json_file_path, 'r', encoding='utf-8') as file:
             json_content = json.load(file)
         video_id = json_content['metadata']['id']
+        video_base_dir = os.path.join(self.args.save_path, mode_folder, 'Video', video_id)
         return video_id, {
-            'video_path' : os.path.join(self.args.save_path, mode_folder, 'Video', video_id),
+            'video_path' : video_base_dir,
             'keypoint_path' : os.path.join(self.args.save_path, mode_folder, 'Keypoint', f'{video_id}.npy'),                        
             "korean_text": json_content['korean_text'],
-            "gloss_sequence": self._create_gloss_sequence(json_content)
+            "gloss_sequence": self._create_gloss_sequence(json_content),
+            "frame" : len(os.listdir(video_base_dir)),
         }
 
     def _make_vocabulary(self, processed_data: Dict[str, Dict[str, str]]) -> List[str]:

@@ -16,6 +16,7 @@ from .processor import Processor
 Image.ANTIALIAS = Image.LANCZOS
 
 H, W = 1080, 1920
+
 class VideoProcessor(Processor):
     def __init__(self) -> None:
         super().__init__()
@@ -59,7 +60,7 @@ class VideoProcessor(Processor):
 
     def _save_images_from_video(self, file_paths: Tuple[str, str]) -> None:
         _, mode_folder, _ = self._get_data_mode_path(self.args.processing_type)
-        folder_path = os.path.join(self.args.save_path, mode_folder, 'Video', os.path.splitext(os.path.basename(file_paths[1]))[0])
+        folder_path = os.path.join(self.args.save_path, mode_folder, 'Video', self._get_filename_without_extension(file_paths[1]))
         os.makedirs(folder_path, exist_ok=True)
         
         start, end, y_top = self._get_json_data(file_paths[0])
@@ -69,22 +70,41 @@ class VideoProcessor(Processor):
         clip = VideoFileClip(video_path)
         return video_path if self.args.min_fps <= clip.fps <= self.args.max_fps else None
 
+    def _sort_by_filename(self, paths: List[str]) -> List[str]:
+        return sorted(paths, key=self._get_filename_without_extension)
+
     def _find_matching_files(self) -> Tuple[List[str], List[str]]:
         json_paths, video_paths = map(sorted, (self._find_file_paths(ft) for ft in ('json', 'mp4')))
-        json_names, video_names = ({os.path.splitext(os.path.basename(p))[0] for p in paths} for paths in (json_paths, video_paths))
+        
+        json_names, video_names = (self._get_filenames_without_extension(paths) for paths in (json_paths, video_paths))
         matching_files = json_names & video_names # intersection of json and video
-        return ([p for p in json_paths if os.path.splitext(os.path.basename(p))[0] in matching_files],
-                [p for p in video_paths if os.path.splitext(os.path.basename(p))[0] in matching_files])
+                
+        return [p for p in json_paths if self._get_filename_without_extension(p) in matching_files], \
+               [p for p in video_paths if self._get_filename_without_extension(p) in matching_files]
 
     def _process_files(self, json_paths: List[str], video_paths: List[str]) -> None:
         logging.info(f"Selecting videos with FPS between {self.args.min_fps} and {self.args.max_fps}...")
         with mp.Pool(processes=self.args.mp) as pool:
             video_paths = list(tqdm(pool.imap(self._filter_videos_by_fps, video_paths), total=len(video_paths)))
-        file_pairs = list(zip(json_paths, list(filter(None, video_paths)))) # [(json, video), ...]
+        
+        video_paths = self._sort_by_filename(list(filter(None, video_paths)))
+        video_names = self._get_filenames_without_extension(video_paths)
+        
+        json_paths = [json_path for json_path in json_paths if self._get_filename_without_extension(json_path) in video_names]
+        json_paths = self._sort_by_filename(json_paths)
+        
+        file_pairs = list(zip(json_paths, video_paths)) # [(json, video), ...]
+        
         logging.info("Saving images for data...")
         with mp.Pool(processes=self.args.mp) as pool:
             list(tqdm(pool.imap(self._save_images_from_video, file_pairs), total=len(file_pairs)))
-        
+
+    def _get_filename_without_extension(self, path: str) -> str:
+        return os.path.splitext(os.path.basename(path))[0]
+
+    def _get_filenames_without_extension(self, paths: List[str]) -> set:
+        return {self._get_filename_without_extension(p) for p in paths}
+    
     def process(self) -> None:
         logging.info('Video preprocessing in progress...')
         json_paths, video_paths = self._find_matching_files()
