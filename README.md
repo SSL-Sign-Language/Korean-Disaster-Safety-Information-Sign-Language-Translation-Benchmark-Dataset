@@ -45,7 +45,7 @@ python main.py --root_path <path_to_downloaded_data> --save_path <path_to_save_r
 ```
 > [!NOTE]
 >
-> For other arguments, see `args.py`. Since the default value is set, you only need to set --root_path to run the code.
+> For other arguments, see `args.py`. Since the default value is set, you only need to set `--root_path` to run the code.
 > 
 > If you don't set `--save_path`, it will automatically create `./result` as a result folder.
 > 
