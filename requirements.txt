@@ -1,0 +1,4 @@
+tqdm==4.66.4
+moviepy==1.0.3
+opencv-python==4.7.0.72
+mediapipe==0.10.11
