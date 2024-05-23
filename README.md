@@ -3,12 +3,13 @@
   
 # `SSL`: Korean Disaster `S`afety Information<br>`S`ign `L`anguage Translation Benchmark Dataset   
 
-[![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](http://smartweb.yonsei.ac.kr/)
 [![Conference](http://img.shields.io/badge/COLING-2024-4b44ce.svg)](https://lrec-coling-2024.org/)
 [![Conference](https://img.shields.io/badge/LREC-2024-4b44ce.svg)](https://lrec-coling-2024.org/)
 
-This repo contains data preprocessing code for the paper : [Korean-Disaster-Safety-Information-Sign-Language-Translation-Benchmark-Dataset]()
+[Korean Disaster Safety Information Sign Language Translation Benchmark Dataset](https://aclanthology.org/2024.lrec-main.869) (Kim et al., LREC-COLING 2024)
+
 </div>
+
 
 # Requirements  
 1. Go to **AIhub** to download the original raw data [Link](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=636).
@@ -66,14 +67,31 @@ After running `main.py`, the following folder structure will be generated:
 
 # Citation
 Please cite the paper below if you use this code in your research:
-
-**Coming soon**
 ```
-@article{YourName,
-  title={Your Title},
-  author={Your team},
-  journal={Location},
-  year={Year}
+@inproceedings{kim-etal-2024-korean-disaster,
+    title = "{K}orean Disaster Safety Information Sign Language Translation Benchmark Dataset",
+    author = "Kim, Wooyoung  and
+      Kim, TaeYong  and
+      Kim, Byeongjin  and
+      Lee, Myeong Jin MJ  and
+      Lee, Gitaek  and
+      Kim, Kirok  and
+      Cha, Jisoo  and
+      Kim, Wooju",
+    editor = "Calzolari, Nicoletta  and
+      Kan, Min-Yen  and
+      Hoste, Veronique  and
+      Lenci, Alessandro  and
+      Sakti, Sakriani  and
+      Xue, Nianwen",
+    booktitle = "Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)",
+    month = may,
+    year = "2024",
+    address = "Torino, Italy",
+    publisher = "ELRA and ICCL",
+    url = "https://aclanthology.org/2024.lrec-main.869",
+    pages = "9948--9953",
+    abstract = "Sign language is a crucial means of communication for deaf communities. However, those outside deaf communities often lack understanding of sign language, leading to inadequate communication accessibility for the deaf. Therefore, sign language translation is a significantly important research area. In this context, we present a new benchmark dataset for Korean sign language translation named SSL:korean disaster Safety information Sign Language translation benchmark dataset. Korean sign language translation datasets provided by the National Information Society Agency in South Korea have faced challenges related to computational resources, heterogeneity between train and test sets, and unrefined data. To alleviate the aforementioned issue, we refine the origin data and release them. Additionally, we report experimental results of baseline using a transformer architecture. We empirically demonstrate that the baseline performance varies depending on the tokenization method applied to gloss sequences. In particular, tokenization based on characteristics of sign language outperforms tokenization considering characteristics of spoken language and tokenization utilizing statistical techniques. We release materials at our https://github.com/SSL-Sign-Language/Korean-Disaster-Safety-Information-Sign-Language-Translation-Benchmark-Dataset",
 }
 ```
 If you have any questions, please contact us [here](http://smartweb.yonsei.ac.kr/).
